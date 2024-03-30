@@ -1,95 +1,110 @@
+"use client";
+
 import Image from "next/image";
 import styles from "./page.module.css";
+import { useState, useEffect } from "react";
+import players from "../players.js";
+
+const SpreadedCards = ({ players }) => {
+	const randomPlayers = getRandomPlayers(players);
+	return (
+		<div className={styles.spread}>
+			{randomPlayers.map((player) => (
+				<Card
+					key={player.id}
+					name={player.name}
+					power={player.power}
+					className={"spreadedCard"}
+				/>
+			))}
+		</div>
+	);
+};
+
+const StackedCards = ({ players, handleSpread }) => {
+	return (
+		<div className={styles.stack}>
+			{players.map((player) => (
+				<Card
+					key={player.id}
+					id={player.id}
+					name={player.name}
+					power={player.power}
+					handleSpread={handleSpread}
+					className={"stackedCard"}
+				/>
+			))}
+		</div>
+	);
+};
+
+const Card = ({ id, name, power, handleSpread, className }) => {
+	const [spread, setSpread] = useState(false);
+
+	const handleClick = () => {
+		if (!handleSpread) return;
+
+		setSpread(true);
+
+		setTimeout(() => {
+			handleSpread(id);
+		}, 1000);
+	};
+	return (
+		<div
+			className={`${styles[className]} ${spread ? styles.spread : ""}`}
+			onClick={handleClick}
+			id={id}
+		>
+			<p>{name}</p>
+			<p>{power}</p>
+		</div>
+	);
+};
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+	const [stackedPlayers, setStackedPlayers] = useState([]);
+	const [spreadedPlayers, setSpreadedPlayers] = useState([]);
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+	console.log("stackedPlayers:", stackedPlayers);
+	console.log("spreadedPlayers:", spreadedPlayers);
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+	useEffect(() => {
+		setStackedPlayers(getRandomPlayers(players));
+	}, []);
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+	const spreadCards = (id) => {
+		const clickedPlayer = stackedPlayers.find((player) => player.id == id);
+		setSpreadedPlayers((prev) => [...prev, clickedPlayer]);
+		setStackedPlayers((prev) => prev.filter((player) => player.id != id));
+	};
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
+	return (
+		<main className={styles.main}>
+			<SpreadedCards players={spreadedPlayers} />
+			{stackedPlayers.length > 0 && (
+				<StackedCards
+					players={stackedPlayers}
+					handleSpread={spreadCards}
+				/>
+			)}
+		</main>
+	);
+}
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+function getRandomPlayers(players) {
+	const playersToShuffle = players.slice();
+	shuffle(playersToShuffle);
+	return playersToShuffle.slice(0, 5);
+}
+
+function shuffle(array) {
+	let len = array.length,
+		currentIndex;
+	for (currentIndex = len - 1; currentIndex > 0; currentIndex--) {
+		let randIndex = Math.floor(Math.random() * (currentIndex + 1));
+		var temp = array[currentIndex];
+		array[currentIndex] = array[randIndex];
+		array[randIndex] = temp;
+	}
 }
