@@ -40,12 +40,10 @@
   gap: 2rem;
 
   box-shadow: 0 5px 10px 0 #00000040, 0 15px 20px 0 #00000020;
+
+  transition: all .5s ease-in-out;
 }
 
-.stackedCard .spread {
-  /* transform: translateY(-1000%); */
-  background-color: black;
-}
 
 .stackedCard:nth-last-child(1) {
   --y: calc(-50% + 15px);
@@ -65,6 +63,11 @@
 .stackedCard:nth-last-child(4) {
   --y: calc(-50% - 30px);
   transform: translate(-50%, var(--y)) scale(.9)
+}
+
+.stackedCard.spreading {
+  transform: translate(-50%, -200%);
+  opacity: 0;
 }
 
 .spread {

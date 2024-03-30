@@ -39,20 +39,20 @@ const StackedCards = ({ players, handleSpread }) => {
 };
 
 const Card = ({ id, name, power, handleSpread, className }) => {
-	const [spread, setSpread] = useState(false);
+	const [spreading, setSpreading] = useState(false);
 
 	const handleClick = () => {
 		if (!handleSpread) return;
 
-		setSpread(true);
+		setSpreading(true);
 
 		setTimeout(() => {
 			handleSpread(id);
-		}, 1000);
+		}, 500);
 	};
 	return (
 		<div
-			className={`${styles[className]} ${spread ? styles.spread : ""}`}
+			className={`${styles[className]} ${spreading ? styles.spreading : ""}`}
 			onClick={handleClick}
 			id={id}
 		>
