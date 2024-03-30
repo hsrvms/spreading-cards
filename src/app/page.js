@@ -70,12 +70,12 @@ export default function Home() {
 	console.log("spreadedPlayers:", spreadedPlayers);
 
 	useEffect(() => {
-		setStackedPlayers(getRandomPlayers(players));
+		setStackedPlayers(getRandomPlayers(players).reverse());
 	}, []);
 
 	const spreadCards = (id) => {
 		const clickedPlayer = stackedPlayers.find((player) => player.id == id);
-		setSpreadedPlayers((prev) => [...prev, clickedPlayer]);
+		setSpreadedPlayers((prev) => [clickedPlayer, ...prev].reverse());
 		setStackedPlayers((prev) => prev.filter((player) => player.id != id));
 	};
 
@@ -95,7 +95,7 @@ export default function Home() {
 function getRandomPlayers(players) {
 	const playersToShuffle = players.slice();
 	shuffle(playersToShuffle);
-	return playersToShuffle.slice(0, 5);
+	return playersToShuffle.slice(0, 5).sort((a, b) => b.id - a.id);
 }
 
 function shuffle(array) {
